@@ -1,4 +1,5 @@
-import { debounce, getTextLabel } from '../../scripts/scripts.js';
+import { debounce } from '../../scripts/scripts.js';
+import { getTextLabel } from '../../scripts/common.js';
 import {
   getFacetsTemplate,
   getNoResultsTemplate,
@@ -86,7 +87,7 @@ export default function decorate(block) {
 
   searchBtn.onclick = () => searchResults();
 
-  const onclickHanlder = (val) => {
+  const onclickHandler = (val) => {
     input.value = val;
     searchResults();
   };
@@ -98,7 +99,7 @@ export default function decorate(block) {
       role: 'option',
       'data-section-name': 'default',
     },
-  }, onclickHanlder));
+  }, onclickHandler));
 
   let liSelected;
   let next;
