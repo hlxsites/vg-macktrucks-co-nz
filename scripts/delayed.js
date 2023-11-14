@@ -24,7 +24,7 @@ if (!window.location.pathname.includes('srcdoc')
   loadScript('https://cdn.cookielaw.org/scripttemplates/otSDKStub.js', {
     type: 'text/javascript',
     charset: 'UTF-8',
-    'data-domain-script': 'bf50d0a6-e209-4fd4-ad2c-17da5f9e66a5',
+    'data-domain-script': '2944b66f-af0b-465f-8e2a-1806f036dbcf',
   });
 }
 
@@ -61,7 +61,7 @@ async function loadHotjar() {
   /* eslint-disable */
   (function(h,o,t,j,a,r){
     h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-    h._hjSettings={hjid:597204,hjsv:6}; a=o.getElementsByTagName('head')[0];
+    h._hjSettings={hjid:740766,hjsv:6}; a=o.getElementsByTagName('head')[0];
     r=o.createElement('script');r.async=1; r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
     a.appendChild(r);
   })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
