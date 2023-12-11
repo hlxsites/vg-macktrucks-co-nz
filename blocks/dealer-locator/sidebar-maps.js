@@ -92,7 +92,6 @@ var uptimeClicked = false;
 $electricDealer = false;
 $hoverText = $('#hoverText').val();
 $country = window.locatorConfig.country;
-var isLocationOFF = true;
 
 // Google callback letting us know maps is ready to be used
 (function () {
@@ -1387,7 +1386,7 @@ $.fn.deleteCookie = function (name) {
   document.cookie = name + '=; Max-Age=-99999999;';
 }
 
-$.fn.sortedPins = function (isLocationOff = false) {
+$.fn.sortedPins = function () {
   $pinLength = $pins.length;
 
   for (var i = 0; i < $pinLength; i++) {
@@ -1400,9 +1399,7 @@ $.fn.sortedPins = function (isLocationOff = false) {
   $sortedPins = $pins;
 
   $sortedPins.sort(function (a, b) {
-    return isLocationOff
-      ? a.COMPANY_DBA_NAME.localeCompare(b.COMPANY_DBA_NAME)
-      : parseFloat(a.distance) - parseFloat(b.distance);
+    return parseFloat(a.distance) - parseFloat(b.distance);
   });
 
   $sortedPins.filter(function (i) {
@@ -1428,25 +1425,25 @@ $.fn.showPin = function (pin) {
         condition = ['Sales, Service & Parts', 'Service and Parts', 'Customer Service Centre', 'Head office'].includes(pin.DEALER_TYPE_DESC);
         break;
 
-        case 'sales-service':
-          condition = pin.DEALER_TYPE_DESC.indexOf('Sales, Service & Parts') > -1;
-          break;
+      case 'sales-service':
+        condition = pin.DEALER_TYPE_DESC.indexOf('Sales, Service & Parts') > -1;
+        break;
 
-        case 'services-parts':
-          condition = pin.DEALER_TYPE_DESC.indexOf('Service and Parts') > -1;
-          break;
+      case 'services-parts':
+        condition = pin.DEALER_TYPE_DESC.indexOf('Service and Parts') > -1;
+        break;
 
-        case 'customer-service':
-          condition = pin.DEALER_TYPE_DESC.indexOf('Customer Service Centre') > -1;
-          break;
+      case 'customer-service':
+        condition = pin.DEALER_TYPE_DESC.indexOf('Customer Service Centre') > -1;
+        break;
 
-        case 'head-office':
-          condition = pin.DEALER_TYPE_DESC.indexOf('Head office') > -1;
-          break;
+      case 'head-office':
+        condition = pin.DEALER_TYPE_DESC.indexOf('Head office') > -1;
+        break;
 
-        default:
-          condition = false;
-          break;
+      default:
+        condition = false;
+        break;
     }
   } else {
     switch (filter) {
@@ -1692,9 +1689,7 @@ $.fn.filterNearbyPins = function () {
   });
 
   tmpPinList.sort(function (a, b) {
-    return isLocationOFF
-    ? a.COMPANY_DBA_NAME.localeCompare(b.COMPANY_DBA_NAME)
-    : parseFloat(a.distance) - parseFloat(b.distance);
+    return parseFloat(a.distance) - parseFloat(b.distance);
   });
   $("#filterUptime,#filterElectricDealer,#filterDealer").css("cursor", "pointer");
   $('.no-dealer-text').hide();
@@ -2410,7 +2405,6 @@ $.fn.setLocation = function () {
   if (navigator.geolocation) {
 
     navigator.geolocation.getCurrentPosition(function (position) {
-      isLocationOFF = false;
       var pos = {
         lat: position.coords.latitude,
         lng: position.coords.longitude
@@ -2484,7 +2478,7 @@ $.fn.setLocation = function () {
       $.fn.handleLocationError(true);
 
       const waiting = $location ? 'none' : 'block';
-      $('.waiting-overlay').css('display', waiting)
+      $('.waiting-overlay').css('display', waiting);
     });
   } else {
     // Browser doesn't support Geolocation
@@ -2651,10 +2645,6 @@ $.fn.handleLocationError = function (browserHasGeolocation, infoWindow, pos) {
   if (!browserHasGeolocation) {
     alert('Error: Your browser doesn\'t support geolocation.');
   } else {
-    console.log('%cError:%c The Geolocation service failed. Check your browser if Geolocation is enabled.'
-      , 'color: white; font-weight: bold; background-color: red', 'color: default; font-weight: normal;');
-    // sort pins Alphabetically by Brand Name if Geolocation is disabled
-    isLocationOFF = true;
     $('.loading-overlay').css('display', 'none');
     $('.waiting-overlay').css('display', 'block');
   }
