@@ -12,12 +12,12 @@ const cookieSetting = decodeURIComponent(document.cookie.split(';')
 const isPerformanceAllowed = cookieSetting.includes(COOKIES.performance);
 
 if (isPerformanceAllowed) {
-  loadGoogleTagManager();
+  // loadGoogleTagManager(); // FIXME uncomment this line after OneTrust ends its scanning
   loadHotjar();
 }
 
 // add more delayed functionality here
-
+loadGoogleTagManager(); // FIXME remove this line after OneTrust ends its scanning
 // Prevent the cookie banner from loading when running in library
 if (!window.location.pathname.includes('srcdoc')
   && !['localhost', 'hlx.page'].some((url) => window.location.host.includes(url))) {
