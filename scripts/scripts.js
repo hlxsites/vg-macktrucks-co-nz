@@ -16,7 +16,6 @@ import {
   toCamelCase,
   toClassName,
   loadScript,
-  getHref,
   createOptimizedPicture,
 } from './lib-franklin.js';
 
@@ -152,50 +151,6 @@ export function findAndCreateImageLink(node) {
     }
   });
 }
-/**
- * Returns a picture element with webp and fallbacks / allow multiple src paths for every breakpoint
- * @param {string} src Default image URL (if no src is passed to breakpoints object)
- * @param {boolean} eager load image eager
- * @param {Array} breakpoints breakpoints and corresponding params (eg. src, width, media)
- */
-export function createCustomOptimizedPicture(src, alt = '', eager = false, breakpoints = [{ media: '(min-width: 400px)', width: '2000' }, { width: '750' }]) {
-  const url = new URL(src, getHref());
-  const picture = document.createElement('picture');
-  let { pathname } = url;
-  const ext = pathname.substring(pathname.lastIndexOf('.') + 1);
-
-  breakpoints.forEach((br) => {
-    // custom src path in breakpoint
-    if (br.src) {
-      const customUrl = new URL(br.src, getHref());
-      pathname = customUrl.pathname;
-    }
-
-    const source = document.createElement('source');
-    if (br.media) source.setAttribute('media', br.media);
-    source.setAttribute('type', 'image/webp');
-    source.setAttribute('srcset', `${pathname}?width=${br.width}&format=webply&optimize=medium`);
-    picture.appendChild(source);
-  });
-
-  // fallback
-  breakpoints.forEach((br, j) => {
-    if (j < breakpoints.length - 1) {
-      const source = document.createElement('source');
-      if (br.media) source.setAttribute('media', br.media);
-      source.setAttribute('srcset', `${pathname}?width=${br.width}&format=${ext}&optimize=medium`);
-      picture.appendChild(source);
-    } else {
-      const image = document.createElement('img');
-      image.setAttribute('loading', eager ? 'eager' : 'lazy');
-      image.setAttribute('alt', alt);
-      picture.appendChild(image);
-      image.setAttribute('src', `${pathname}?width=${br.width}&format=${ext}&optimize=medium`);
-    }
-  });
-
-  return picture;
-}
 
 /**
  * Builds hero block and prepends to main in a new section.
@@ -277,7 +232,7 @@ export function decorateLinks(block) {
 }
 
 function decorateSectionBackgrounds(main) {
-  const variantClasses = ['black-background', 'gray-background', 'background-with-dots'];
+  const variantClasses = ['black-background', 'gray-background', 'background-with-dots', 'light-gray-background'];
 
   main.querySelectorAll(':scope > .section').forEach((section) => {
     // transform background color variants into BEM classnames
@@ -323,13 +278,10 @@ const createInpageNavigation = (main) => {
 
   // Sort the object by order
   const sortedObject = tabItemsObj.slice().sort((obj1, obj2) => {
-    if (!obj1.order) {
-      return 1; // Move 'a' to the end
-    }
-    if (!obj2.order) {
-      return -1; // Move 'b' to the end
-    }
-    return obj1.order - obj2.order;
+    const order1 = obj1.order ?? Infinity; // Fallback to a large number if 'order' is not present
+    const order2 = obj2.order ?? Infinity;
+
+    return order1 - order2;
   });
 
   // From the array of objects create the DOM
@@ -369,46 +321,6 @@ function buildInpageNavigationBlock(main, classname) {
   }
 }
 
-function createTabbedSection(tabItems, classname) {
-  const tabSection = createElement('div', { classes: 'section' });
-  tabSection.dataset.sectionStatus = 'initialized';
-  const tabBlock = buildBlock(classname, [tabItems]);
-  tabSection.append(tabBlock);
-  return tabSection;
-}
-
-function buildTabbedBlock(main, classname) {
-  let nextElement;
-  const tabItems = [];
-  const mainChildren = [...main.querySelectorAll(':scope > div')];
-
-  mainChildren.forEach((section, i2) => {
-    const isCarousel = section.dataset.carousel;
-    if (!isCarousel) return;
-
-    nextElement = mainChildren[i2 + 1];
-    const tabContent = createElement('div', { classes: `${classname}__item` });
-    tabContent.dataset.carousel = section.dataset.carousel;
-    tabContent.innerHTML = section.innerHTML;
-    const image = tabContent.querySelector('p > picture');
-
-    tabContent.prepend(image);
-
-    tabItems.push(tabContent);
-    section.remove();
-  });
-
-  if (tabItems.length > 0) {
-    const tabbedCarouselSection = createTabbedSection(tabItems, classname);
-    if (nextElement) { // if we saved a position push the carousel in that position if not
-      main.insertBefore(tabbedCarouselSection, nextElement);
-    } else {
-      main.append(tabbedCarouselSection);
-    }
-    decorateBlock(tabbedCarouselSection.querySelector(`.${classname}`));
-  }
-}
-
 /**
  * Decorates the main element.
  * @param {Element} main The main element
@@ -428,8 +340,6 @@ export function decorateMain(main, head) {
   buildTruckLineupBlock(main, 'v2-truck-lineup');
   // Inpage navigation
   buildInpageNavigationBlock(main, 'v2-inpage-navigation');
-  // V2 tabbed carousel
-  buildTabbedBlock(main, 'v2-tabbed-carousel');
 }
 
 async function loadTemplate(doc, templateName) {
