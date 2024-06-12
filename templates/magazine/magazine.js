@@ -131,7 +131,7 @@ export default async function decorate(doc) {
 
   currentArticle.append(firstHeading, author, shareSection1, parentSection, shareSection2);
   articleTexts.append(currentArticle, recommendationsSection, recentSection);
-  article.append(breadSection, heroSection, articleTexts, subscribeContent);
+  article.append(breadSection, heroSection, articleTexts, (subscribeContent ? subscribeContent : ''));
 
   container.innerText = '';
   container.append(article);
