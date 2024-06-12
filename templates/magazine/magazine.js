@@ -2,7 +2,11 @@ import {
   getMetadata,
   createOptimizedPicture,
 } from '../../scripts/lib-franklin.js';
-import { createElement } from '../../scripts/common.js';
+import {
+  createElement,
+  MAGAZINE_CONFIGS,
+  extractObjectFromArray,
+} from '../../scripts/common.js';
 
 async function buildArticleHero() {
   const title = getMetadata('og:title');
@@ -113,6 +117,20 @@ export default async function decorate(doc) {
   const author = createElement('p', { classes: 'author-text' });
   author.innerText = authorName;
 
+  const articleDate = getMetadata('date');
+  if (articleDate) {
+    const date = new Date(articleDate);
+    const locale = getMetadata('locale');
+    const { DATE_LANGUAGE, DATE_OPTIONS } = MAGAZINE_CONFIGS;
+
+    const parsedOptions = JSON.parse(DATE_OPTIONS);
+    const extractedOptions = extractObjectFromArray(parsedOptions);
+    const dateFormat = new Intl.DateTimeFormat(locale || DATE_LANGUAGE, extractedOptions);
+
+    // eslint-disable-next-line no-unused-vars
+    const localeDate = dateFormat.format(date);
+  }
+
   const defaultContent = container.querySelector('.default-content-wrapper');
   const subscribeContent = container.querySelector('.magazine-subscribe-wrapper');
 
@@ -129,9 +147,20 @@ export default async function decorate(doc) {
 
   parentSection.insertAdjacentElement('afterbegin', firstHeading);
 
-  currentArticle.append(firstHeading, author, shareSection1, parentSection, shareSection2);
+  currentArticle.append(
+    firstHeading,
+    author,
+    shareSection1,
+    parentSection,
+    shareSection2,
+  );
   articleTexts.append(currentArticle, recommendationsSection, recentSection);
-  article.append(breadSection, heroSection, articleTexts, subscribeContent);
+  article.append(
+    breadSection,
+    heroSection,
+    articleTexts,
+    ...(subscribeContent ? [subscribeContent] : []),
+  );
 
   container.innerText = '';
   container.append(article);

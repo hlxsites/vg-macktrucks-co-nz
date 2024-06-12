@@ -1,7 +1,7 @@
-import { createElement } from '../../scripts/common.js';
 import {
   isVideoLink, selectVideoLink, wrapImageWithVideoLink, addVideoShowHandler,
 } from '../../scripts/video-helper.js';
+import { createElement } from '../../scripts/common.js';
 
 const debounceDelay = 30;
 
