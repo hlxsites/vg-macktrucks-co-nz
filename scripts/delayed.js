@@ -17,6 +17,7 @@ const {
   GTM_ID = false,
   HOTJAR_ID = false,
   LINKEDIN_PARTNER_ID = false,
+  COOKIE_CHECK = true,
 } = COOKIE_CONFIGS;
 
 const parsedData = JSON.parse(ACC_ENG_TRACKING);
@@ -27,18 +28,20 @@ const { piAId, piCId, piHostname } = splitData;
 // Core Web Vitals RUM collection
 sampleRUM('cwv');
 
+const avoidCookieCheck = COOKIE_CHECK === 'false';
+
 // COOKIE ACCEPTANCE CHECKING
-if (isPerformanceAllowed()) {
+if (avoidCookieCheck || isPerformanceAllowed()) {
   if (GTM_ID) loadGoogleTagManager();
   if (HOTJAR_ID) loadHotjar();
 }
 
-if (isSocialAllowed()) {
+if (avoidCookieCheck || isSocialAllowed()) {
   if (FACEBOOK_ID) loadFacebookPixel();
   if (LINKEDIN_PARTNER_ID) loadLinkedInInsightTag();
 }
 
-if (isTargetingAllowed()) {
+if (avoidCookieCheck || isTargetingAllowed()) {
   if (ACC_ENG_TRACKING) loadAccountEngagementTracking();
 }
 
