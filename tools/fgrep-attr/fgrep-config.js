@@ -4,10 +4,10 @@ async function getConstantValues() {
   return constants;
 }
 
-const formatValues = (values) => {
+export const formatValues = (values) => {
   const obj = {};
   /* eslint-disable-next-line */
-  values.forEach(({ name, value }) => obj[name] = value);
+  if (values) values.forEach(({ name, value }) => obj[name] = value);
   return obj;
 };
 
@@ -15,5 +15,5 @@ const {
   fgrep,
 } = await getConstantValues();
 
-const FGREP_VALUES = formatValues(fgrep.data);
+const FGREP_VALUES = formatValues(fgrep?.data);
 export default FGREP_VALUES;
