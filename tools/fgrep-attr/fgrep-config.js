@@ -1,6 +1,15 @@
 async function getConstantValues() {
   const url = '/constants.json';
-  const constants = await fetch(url).then((resp) => resp.json());
+  let constants;
+  try {
+    const response = await fetch(url).then((resp) => resp.json());
+    if (!response.ok) {
+      constants = response;
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error with constants file', error);
+  }
   return constants;
 }
 
