@@ -334,7 +334,7 @@ export function decorateLinks(block) {
 
       const url = new URL(link.href);
       const external = !url.host.match('macktrucks.co.nz') && !url.host.match('.hlx.(page|live)') && !url.host.match('localhost');
-      if (url.host.match('build.macktrucks.com') || url.pathname.endsWith('.pdf') || external) {
+      if (url.host.match('build.macktrucks.co.nz') || url.pathname.endsWith('.pdf') || external) {
         link.target = '_blank';
       }
     });
